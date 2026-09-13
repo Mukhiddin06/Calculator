@@ -1,26 +1,24 @@
-const keypad = [
-  { label: 'AC', tone: 'utility' },
-  { label: '+/-', tone: 'utility' },
-  { label: '%', tone: 'utility' },
-  { label: '&divide;', tone: 'operator' },
-  { label: '7', tone: 'number' },
-  { label: '8', tone: 'number' },
-  { label: '9', tone: 'number' },
-  { label: '&times;', tone: 'operator' },
-  { label: '4', tone: 'number' },
-  { label: '5', tone: 'number' },
-  { label: '6', tone: 'number' },
-  { label: '-', tone: 'operator' },
-  { label: '1', tone: 'number' },
-  { label: '2', tone: 'number' },
-  { label: '3', tone: 'number' },
-  { label: '+', tone: 'operator' },
-  { label: '0', tone: 'number zero' },
-  { label: '.', tone: 'number' },
-  { label: '=', tone: 'equals' },
-]
+import { useState } from "react"
+import { keypad } from "./utilis"
 
 const App = () => {
+  const [currentValue, setCurrentValue] = useState('0')
+  const [expression, setExpression] = useState('')
+
+  const handleNumberPress = (value: string) => {
+    setCurrentValue((prev) => {
+    if (value === '.' && prev.includes('.')) {
+      return prev
+    }
+
+    if (value === '.') {
+      return prev + value
+    }
+
+    return prev === '0' ? value : prev + value
+  })
+  }
+
   return (
     <main className="workspace">
       <section className="calculator" aria-label="Kalkulyator interfeysi">
@@ -39,8 +37,9 @@ const App = () => {
           </header>
 
           <div className="display" aria-live="polite">
-            <p className="expression">720 &divide; 9 + 14</p>
-            <p className="result">94</p>
+            <p className="result">{
+            expression}</p>
+            <p className="expression">{currentValue}</p>
           </div>
 
           <div className="keypad" aria-label="Kalkulyator tugmalari">
@@ -50,6 +49,12 @@ const App = () => {
                 key={key.label}
                 type="button"
                 dangerouslySetInnerHTML={{ __html: key.label }}
+                onClick={() => {
+                  console.log(key.label, key.tone)
+                  if (key.tone === 'number') {
+                    handleNumberPress(key.label)
+                  }
+                }}
               />
             ))}
           </div>
