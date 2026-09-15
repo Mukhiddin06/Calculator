@@ -4,20 +4,63 @@ import { keypad } from "./utilis"
 const App = () => {
   const [currentValue, setCurrentValue] = useState('0')
   const [expression, setExpression] = useState('')
+  const [operator, setOperator] = useState('')
 
-  const handleNumberPress = (value: string) => {
-    setCurrentValue((prev) => {
-    if (value === '.' && prev.includes('.')) {
+const handleNumberPress = (value: string) => {
+  setCurrentValue((prev) => {
+    const parts = prev.split(' ')
+    const lastPart = parts[parts.length - 1]
+
+    if (value === '.' && lastPart.includes('.')) {
       return prev
     }
 
     if (value === '.') {
-      return prev + value
+      return lastPart === '' ? prev + '0.' : prev + value
     }
 
-    return prev === '0' ? value : prev + value
+    if (['+', '-', '*', '/'].includes(lastPart)) {
+      return `${prev} ${value}`
+    }
+
+    return lastPart === '0'
+      ? prev.slice(0, -1) + value
+      : prev + value
   })
+}
+
+const handleOperatorPress = (value: string) => {
+  setOperator(value)
+  setCurrentValue(`${currentValue} ${value}`)
+}
+
+const handleEqualsPress = () => {
+  const parts = currentValue.split(' ')
+
+  const firstNumber = Number(parts[0])
+  const operator = parts[1]
+  const secondNumber = Number(parts[2])
+
+  let result = 0
+
+  if (operator === '+') {
+    result = firstNumber + secondNumber
   }
+
+  if (operator === '-') {
+    result = firstNumber - secondNumber
+  }
+
+  if (operator === '*') {
+    result = firstNumber * secondNumber
+  }
+
+  if (operator === '/') {
+    result = firstNumber / secondNumber
+  }
+
+  setExpression(String(result))
+}
 
   return (
     <main className="workspace">
@@ -37,8 +80,7 @@ const App = () => {
           </header>
 
           <div className="display" aria-live="polite">
-            <p className="result">{
-            expression}</p>
+            <p className="result">{expression}</p>
             <p className="expression">{currentValue}</p>
           </div>
 
@@ -53,6 +95,12 @@ const App = () => {
                   console.log(key.label, key.tone)
                   if (key.tone === 'number') {
                     handleNumberPress(key.label)
+                  }
+                  if (key.tone === 'operator') {
+                    handleOperatorPress(key.label)
+                  }
+                  if (key.tone === 'equals') {
+                    handleEqualsPress()
                   }
                 }}
               />
