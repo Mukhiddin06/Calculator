@@ -102,6 +102,24 @@ const handleEqualsPress = () => {
                   if (key.tone === 'equals') {
                     handleEqualsPress()
                   }
+                  if (key.tone === 'utility') {
+                    if (key.label === 'AC') {
+                      setCurrentValue('0')
+                      setExpression('')
+                      setOperator('')
+                    }
+                    // if (key.label === '+/-') {
+                    //   setCurrentValue((prev) => {
+                    //     const parts = prev.split(' ')
+                    //     const lastPart = parts[parts.length - 1]
+                    //     const newLastPart = String(Number(lastPart) * -1)
+                    //     return prev.replace(lastPart, newLastPart)
+                    //   })
+                    // }
+                    // if (key.label === '%') {
+
+                    // }
+                  }
                 }}
               />
             ))}
