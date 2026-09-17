@@ -1,6 +1,6 @@
 export const keypad = [
   { label: 'AC', tone: 'utility' },
-  { label: '+/-', tone: 'utility' },
+  { label: '⌫', tone: 'utility' },
   { label: '%', tone: 'utility' },
   { label: '/', tone: 'operator' },
   { label: '7', tone: 'number' },
@@ -15,7 +15,7 @@ export const keypad = [
   { label: '2', tone: 'number' },
   { label: '3', tone: 'number' },
   { label: '+', tone: 'operator' },
-  { label: '0', tone: 'number zero' },
+  { label: '0', tone: 'number' },
   { label: '.', tone: 'number' },
   { label: '=', tone: 'equals' },
 ]

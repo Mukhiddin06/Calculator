@@ -62,6 +62,37 @@ const handleEqualsPress = () => {
   setExpression(String(result))
 }
 
+const handleBackspacePress = () => {
+  setCurrentValue((prev) => {
+    if (prev === '0') {
+      return prev
+    }
+    
+    const newValue = prev.slice(0, -1)
+
+    if (newValue.endsWith(' ')) {
+      return newValue.slice(0, -1)
+    }
+
+    return newValue || '0'
+  })
+}
+
+const handlePercentPress = () => {
+  setCurrentValue((prev) => {
+    const parts = prev.split(' ')
+    const lastPart = parts[parts.length - 1]
+
+    if (!lastPart || ['+', '-', '*', '/'].includes(lastPart)) {
+      return prev
+    }
+
+    const percent = Number(lastPart) / 100
+
+    return [...parts.slice(0, -1), String(percent)].join(' ')
+  })
+}
+
   return (
     <main className="workspace">
       <section className="calculator" aria-label="Kalkulyator interfeysi">
@@ -108,17 +139,12 @@ const handleEqualsPress = () => {
                       setExpression('')
                       setOperator('')
                     }
-                    // if (key.label === '+/-') {
-                    //   setCurrentValue((prev) => {
-                    //     const parts = prev.split(' ')
-                    //     const lastPart = parts[parts.length - 1]
-                    //     const newLastPart = String(Number(lastPart) * -1)
-                    //     return prev.replace(lastPart, newLastPart)
-                    //   })
-                    // }
-                    // if (key.label === '%') {
-
-                    // }
+                    if (key.label === '⌫') {
+                      handleBackspacePress()
+                    }
+                    if (key.label === '%') {
+                      handlePercentPress()
+                    }
                   }
                 }}
               />

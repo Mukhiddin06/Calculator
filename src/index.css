@@ -198,6 +198,10 @@ button {
   background: #116b57;
 }
 
+.keypad button:nth-last-child(3) {
+  grid-column: span 2;
+}
+
 .zero {
   grid-column: span 2;
 }
