@@ -4,7 +4,6 @@ import { keypad } from "./utilis"
 const App = () => {
   const [currentValue, setCurrentValue] = useState('0')
   const [expression, setExpression] = useState('')
-  // const [operator, setOperator] = useState('')
 
 const handleNumberPress = (value: string) => {
   setCurrentValue((prev) => {
@@ -30,7 +29,6 @@ const handleNumberPress = (value: string) => {
 }
 
 const handleOperatorPress = (value: string) => {
-  // setOperator(value)
   setCurrentValue(`${currentValue} ${value}`)
 }
 
@@ -123,7 +121,7 @@ const handlePercentPress = () => {
                 type="button"
                 dangerouslySetInnerHTML={{ __html: key.label }}
                 onClick={() => {
-                  console.log(key.label, key.tone)
+                  // console.log(key.label, key.tone)
                   if (key.tone === 'number') {
                     handleNumberPress(key.label)
                   }
@@ -137,7 +135,6 @@ const handlePercentPress = () => {
                     if (key.label === 'AC') {
                       setCurrentValue('0')
                       setExpression('')
-                      // setOperator('')
                     }
                     if (key.label === '⌫') {
                       handleBackspacePress()
