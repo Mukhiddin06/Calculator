@@ -1,9 +1,48 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { keypad } from "./utilis"
+import { useCalculatorStore } from './store'
 
 const App = () => {
   const [currentValue, setCurrentValue] = useState('0')
   const [expression, setExpression] = useState('')
+  const { history, addHistory, clearHistory } = useCalculatorStore()
+
+  useEffect(() => {
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const key = event.key
+
+    if (/^[0-9.]$/.test(key)) {
+      handleNumberPress(key)
+    }
+
+    if (['+', '-', '*', '/'].includes(key)) {
+      handleOperatorPress(key)
+    }
+
+    if (key === 'Enter' || key === '=') {
+      handleEqualsPress()
+    }
+
+    if (key === 'Backspace') {
+      handleBackspacePress()
+    }
+
+    if (key === 'Escape') {
+      setCurrentValue('0')
+      setExpression('')
+    }
+
+    if (key === '%') {
+      handlePercentPress()
+    }
+  }
+
+  window.addEventListener('keydown', handleKeyDown)
+
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown)
+  }
+}, [])
 
 const handleNumberPress = (value: string) => {
   setCurrentValue((prev) => {
@@ -29,35 +68,66 @@ const handleNumberPress = (value: string) => {
 }
 
 const handleOperatorPress = (value: string) => {
-  setCurrentValue(`${currentValue} ${value}`)
+  setCurrentValue((prev) => {
+    const parts = prev.split(' ')
+    const lastPart = parts[parts.length - 1]
+
+    if (['+', '-', '*', '/'].includes(lastPart)) {
+      return prev
+    }
+
+    return `${prev} ${value}`
+  })
 }
 
 const handleEqualsPress = () => {
   const parts = currentValue.split(' ')
 
-  const firstNumber = Number(parts[0])
-  const operator = parts[1]
-  const secondNumber = Number(parts[2])
+  // 1. / va * amallarini bajarish
+  for (let i = 1; i < parts.length; i += 2) {
+    const operator = parts[i]
 
-  let result = 0
+    if (operator === '/' || operator === '*') {
+      const firstNumber = Number(parts[i - 1])
+      const secondNumber = Number(parts[i + 1])
 
-  if (operator === '+') {
-    result = firstNumber + secondNumber
+      let result = 0
+
+      if (operator === '/') {
+        result = firstNumber / secondNumber
+      }
+
+      if (operator === '*') {
+        result = firstNumber * secondNumber
+      }
+
+      parts.splice(i - 1, 3, String(result))
+
+      i -= 2
+    }
   }
 
-  if (operator === '-') {
-    result = firstNumber - secondNumber
-  }
+  // 2. - va + amallarini bajarish
+  let result = Number(parts[0])
 
-  if (operator === '*') {
-    result = firstNumber * secondNumber
-  }
+  for (let i = 1; i < parts.length; i += 2) {
+    const operator = parts[i]
+    const nextNumber = Number(parts[i + 1])
 
-  if (operator === '/') {
-    result = firstNumber / secondNumber
+    if (operator === '-') {
+      result -= nextNumber
+    }
+
+    if (operator === '+') {
+      result += nextNumber
+    }
   }
 
   setExpression(String(result))
+  addHistory({
+  expression: currentValue,
+  result: String(result),
+  })
 }
 
 const handleBackspacePress = () => {
@@ -155,29 +225,23 @@ const handlePercentPress = () => {
               <p className="eyebrow">BUGUN</p>
               <h1>Oxirgi hisoblar</h1>
             </div>
-            <button className="more-button" type="button" aria-label="Tarix menyusi">
-              <span />
-              <span />
-              <span />
+            <button className="more-button" type="button" aria-label="Tarix menyusi" onClick={clearHistory}>
+              X
             </button>
           </div>
 
           <div className="history-list">
-            <article className="history-item active">
-              <p>720 &divide; 9 + 14</p>
-              <strong>94</strong>
-            </article>
-            <article className="history-item">
-              <p>1 280 &times; 8</p>
-              <strong>10 240</strong>
-            </article>
-            <article className="history-item">
-              <p>8 700 - 2 345</p>
-              <strong>6 355</strong>
-            </article>
+  {history.map((item, index) => (
+    <article className="history-item" key={index}>
+      <p>{item.expression}</p>
+      <strong>{item.result}</strong>
+    </article>
+  ))}
           </div>
 
-          <p className="history-footnote">3 ta hisoblash</p>
+          <p className="history-footnote">
+  {history.length} ta hisoblash
+</p>
         </aside>
       </section>
     </main>

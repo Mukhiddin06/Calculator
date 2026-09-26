@@ -229,6 +229,7 @@ button {
 }
 
 .more-button {
+  margin-top: 15px;
   width: 28px;
   height: 28px;
   display: inline-flex;
