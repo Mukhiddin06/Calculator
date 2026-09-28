@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { keypad } from "./utilis"
 import { useCalculatorStore } from './store'
 
@@ -6,6 +6,12 @@ const App = () => {
   const [currentValue, setCurrentValue] = useState('0')
   const [expression, setExpression] = useState('')
   const { history, addHistory, clearHistory } = useCalculatorStore()
+
+  const currentValueRef = useRef(currentValue)
+
+useEffect(() => {
+  currentValueRef.current = currentValue
+}, [currentValue])
 
   useEffect(() => {
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -81,7 +87,7 @@ const handleOperatorPress = (value: string) => {
 }
 
 const handleEqualsPress = () => {
-  const parts = currentValue.split(' ')
+  const parts = currentValueRef.current.split(' ')
 
   // 1. / va * amallarini bajarish
   for (let i = 1; i < parts.length; i += 2) {
@@ -125,7 +131,7 @@ const handleEqualsPress = () => {
 
   setExpression(String(result))
   addHistory({
-  expression: currentValue,
+  expression: currentValueRef.current,
   result: String(result),
   })
 }
